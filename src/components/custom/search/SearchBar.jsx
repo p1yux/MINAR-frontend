@@ -9,10 +9,10 @@ const exampleSuggestions = [
   "Find me gaming laptops below 1.5 lakhs",
   "Find all deals on the new iPhone 16 series",
   "I wanted to buy the canon 70D dslr but it's out of stock",
-  "Large area rugs for the living room ideas",
-  "Outfits I can wear to dinner with husband",
-  "Find budget sunglasses from Amazon under 500",
-  "Online stores that sell wooden coffee tables below 5000",
+  // "Large area rugs for the living room ideas",
+  // "Outfits I can wear to dinner with husband",
+  // "Find budget sunglasses from Amazon under 500",
+  // "Online stores that sell wooden coffee tables below 5000",
 ];
 
 const SearchBar = () => {
