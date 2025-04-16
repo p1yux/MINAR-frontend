@@ -8,25 +8,25 @@ const WhatWeDo = () => {
       id: 1,
       title: "Shop Smarter, Not Harder",
       description: "Skip the endless browsing. Minar scans the entire internet — from big marketplaces to hidden gems — to find exactly what you want.",
-      bgColor: "bg-gradient-to-br from-amber-100 to-amber-50",
+      bgColor: "bg-[url('/images/landing/landingcardbg01.png')] bg-cover bg-center",
     },
     {
       id: 2,
       title: "Your very own assistant experience",
       description: "Want alternatives, better deals, or something similar? Or just have questions about what you're buying? Just use your very own personal assistant.",
-      bgColor: "bg-gradient-to-br from-blue-100 to-blue-50",
+      bgColor: "bg-[url('/images/landing/landingcardbg02.png')] bg-cover bg-center",
     },
     {
       id: 3,
       title: "Track It Till It's Yours",
       description: "Minar's personal assistant keeps you updated with live tracking on prices, discounts, availability, details and more — so you can compare and buy like a pro.",
-      bgColor: "bg-gradient-to-br from-red-100 to-red-50",
+      bgColor: "bg-[url('/images/landing/landingcardbg03.png')] bg-cover bg-center",
     },
     {
       id: 4,
       title: "Make shopping simpler",
       description: "There once existed the idea of an all-app. Anything more than a whisper, and it would vanish. Not anymore. Browse, compare, track, ask, and buy, all through the Minar experience.",
-      bgColor: "bg-gradient-to-br from-green-100 to-green-50",
+      bgColor: "bg-[url('/images/landing/landingcardbg04.png')] bg-cover bg-center",
     },
   ];
 
