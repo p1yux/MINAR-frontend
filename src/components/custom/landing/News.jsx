@@ -44,7 +44,7 @@ const News = () => {
   ];
 
   return (
-    <section className="py-16 bg-[#faf8f5] mt-[-50px]">
+    <section id="news" className="py-16 bg-[#faf8f5]">
       <div className="container mx-auto px-6">
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-gray-900">News: What's Buzzing at Minar?</h2>

@@ -54,10 +54,10 @@ export const useBazaarData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulate API delay
+        
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // In the future, these will be actual API calls
+        // future, these will be actual API calls
         // const categoriesResponse = await fetch('/api/bazaar/categories');
         // const categories = await categoriesResponse.json();
         

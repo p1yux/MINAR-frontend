@@ -50,7 +50,7 @@ const ExploreBazaar = () => {
 
   return (
     <section 
-      className="py-16 relative mt-[-75px] bg-gradient-to-b from-white to-[#faf8f5]" 
+      className="py-16 relative mt-[-75px]  bg-[#faf8f5]" 
       // style={{ 
       //   backgroundImage: "url('/images/bazaar/bazaarbg.png')", 
       //   backgroundSize: "110%",

@@ -36,7 +36,7 @@ const HowToUse = () => {
   ];
 
   return (
-    <section className="py-16 bg-[#faf8f5] mt-[-50px]">
+    <section id="use" className="py-16 bg-[#faf8f5] mt-[-50px]">
       <div className="container mx-auto px-6 mb-12">
 
         <div className="max-w-3xl mx-auto mb-20 border border-gray-200 rounded-md overflow-hidden">

@@ -31,7 +31,7 @@ const WhatWeDo = () => {
   ];
 
   return (
-    <section className="py-16 bg-[#faf8f5] mt-[-50px]">
+    <section id="about" className="py-16 bg-[#faf8f5] mt-[-50px]">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-1 text-gray-900">What We Do:</h2>
