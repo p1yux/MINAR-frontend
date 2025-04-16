@@ -1,5 +1,9 @@
 import React from "react";
 import SecHero from "@/components/custom/landing/SecHero";
+import SearchResults from "@/components/custom/search/SearchResults";
+import ExploreBazaar from "@/components/custom/explorebazaar/ExploreBazaar";
+import News from "@/components/custom/landing/News";
+
 
 export const metadata = {
   title: "Search Results | Minar",
@@ -9,10 +13,12 @@ export const metadata = {
 export default function SearchResultsPage() {
   return (
     <main>
-      <SecHero />
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-xl font-bold mb-4">Search Results</h1>
-        <p>Your search results will appear here.</p>
+        <SecHero />
+        <SearchResults />
+        <div className="mt-[75px]">
+            <ExploreBazaar />
+            <hr className="border-gray-900 mx-auto w-1/2 mt-20" />
+            <News />
         </div>
     </main>
   );
