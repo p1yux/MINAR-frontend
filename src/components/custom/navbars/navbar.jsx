@@ -4,10 +4,19 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useProfile } from "@/providers/ProfileProvider";
+import { useLogoutUser } from "@/hooks/auth/useLogoutUser";
+
+// Define public routes
+const publicRoutes = ['/login', '/signup', '/forgot-password'];
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isAuthPage = pathname.includes("/(auth)");
+  const isPublicRoute = publicRoutes.some(route => pathname?.startsWith(route));
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const { logout, isLoading: isLoggingOut } = useLogoutUser();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +33,15 @@ const Navbar = () => {
   }, [scrolled]);
 
   if (isAuthPage) return null;
+
+  const isLoggedIn = !!profile;
+  const fullName = isLoggedIn 
+    ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.email.split('@')[0]
+    : '';
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header
@@ -42,6 +60,7 @@ const Navbar = () => {
                 MINAR
               </div>
             </Link>
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (  
             <div className="hidden md:flex space-x-4">
               <Link href="#bazaar" className="text-gray-900 hover:text-gray-700 text-sm">
                 Bazaar
@@ -62,16 +81,20 @@ const Navbar = () => {
                 Contact Us
               </Link>
             </div>
+            )}
           </div>
 
           {/* Right section - Actions */}
           <div className="flex items-center space-x-3">
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (
             <Link
               href="/track"
               className="px-4 py-1.5 rounded-full border border-gray-700 text-xs text-gray-900 hover:bg-gray-100"
             >
               Product Tracking
             </Link>
+            )}
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (
             <Link
               href="/wishlist"
               className="px-4 py-1.5 rounded-full border border-gray-700 text-xs text-gray-900 hover:bg-gray-100 flex items-center"
@@ -93,6 +116,53 @@ const Navbar = () => {
               </span>
               Wishlist
             </Link>
+            )}
+            {isLoggedIn ? (
+              <div className="relative group">
+                <Link
+                  href={`/profile/${profile.id}`}
+                  className="px-4 py-1.5 rounded-sm border border-gray-900 bg-gray-900 hover:bg-white hover:text-gray-900 transition-colors text-white text-xs flex items-center"
+                >
+                  <span className="mr-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </span>
+                  {fullName}
+                </Link>
+                <div className="absolute right-0 mt-1 w-48 bg-white shadow-lg rounded-md overflow-hidden z-20 transform scale-0 group-hover:scale-100 transition-transform origin-top-right">
+                  <div className="py-1">
+                    <Link href={`/profile/${profile.id}`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      My Profile
+                    </Link>
+                    <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      My Orders
+                    </Link>
+                    <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Settings
+                    </Link>
+                    <button 
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                    >
+                      {isLoggingOut ? "Signing out..." : "Sign Out"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
             <Link
               href="/login"
               className="px-4 py-1.5 rounded-sm border border-gray-900 bg-gray-900 hover:bg-white hover:text-gray-900 transition-colors text-white text-xs flex items-center"
@@ -116,6 +186,7 @@ const Navbar = () => {
               </span>
               SIGN IN TO VIEW
             </Link>
+            )}
           </div>
         </nav>
       </div>

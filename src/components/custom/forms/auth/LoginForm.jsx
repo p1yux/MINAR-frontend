@@ -2,24 +2,44 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useLoginUser } from "@/hooks/auth/useLoginUser";
 
 const LoginForm = () => {
+  const [loginMethod, setLoginMethod] = useState("email"); // "email" or "mobile"
   const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { login, isLoading, validationErrors, apiErrors } = useLoginUser();
 
   const handleMobileNumberChange = (e) => {
     setMobileNumber(e.target.value);
   };
+  
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+  
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      console.log("OTP sent to", mobileNumber);
-    }, 1000);
+    if (loginMethod === "email") {
+      login({ email, password });
+    } else {
+      // Mobile login logic remains the same for now
+      setIsSubmitting(true);
+      
+      // Simulate API call
+      setTimeout(() => {
+        setIsSubmitting(false);
+        console.log("OTP sent to", mobileNumber);
+      }, 1000);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -75,27 +95,101 @@ const LoginForm = () => {
         <div className="flex-1 h-px bg-gray-300"></div>
       </div>
 
-      <p className="text-gray-600 mb-2 text-xs">Enter your mobile number below to login</p>
-      
-      <form onSubmit={handleSubmit}>
-        <input
-          type="tel"
-          value={mobileNumber}
-          onChange={handleMobileNumberChange}
-          placeholder="mobile number"
-          className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
-          required
-          aria-label="Mobile number"
-        />
+      <div className="mb-4 flex justify-between">
         <button
-          type="submit"
-          className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm"
-          disabled={isSubmitting}
-          aria-label="Get OTP"
+          type="button"
+          onClick={() => setLoginMethod("email")}
+          className={`text-sm px-3 py-1 rounded ${
+            loginMethod === "email" 
+              ? "bg-gray-900 text-white" 
+              : "bg-gray-100 text-gray-600"
+          }`}
+          aria-label="Use email login"
         >
-          {isSubmitting ? "Sending..." : "Get OTP"}
+          Email
         </button>
-      </form>
+        <button
+          type="button"
+          onClick={() => setLoginMethod("mobile")}
+          className={`text-sm px-3 py-1 rounded ${
+            loginMethod === "mobile" 
+              ? "bg-gray-900 text-white" 
+              : "bg-gray-100 text-gray-600"
+          }`}
+          aria-label="Use mobile login"
+        >
+          Mobile
+        </button>
+      </div>
+      
+      {apiErrors && (
+        <div className="mb-4 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">
+          {apiErrors}
+        </div>
+      )}
+      
+      {loginMethod === "email" ? (
+        <>
+          <p className="text-gray-600 mb-2 text-xs">Enter your email and password to login</p>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="Email address"
+              className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
+              required
+              aria-label="Email address"
+            />
+            {validationErrors?.email && (
+              <p className="text-red-500 text-xs mb-2">{validationErrors.email}</p>
+            )}
+            <input
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="Password"
+              className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
+              required
+              aria-label="Password"
+            />
+            {validationErrors?.password && (
+              <p className="text-red-500 text-xs mb-2">{validationErrors.password}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm"
+              disabled={isLoading}
+              aria-label="Login"
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </>
+      ) : (
+        <>
+          <p className="text-gray-600 mb-2 text-xs">Enter your mobile number below to login</p>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="tel"
+              value={mobileNumber}
+              onChange={handleMobileNumberChange}
+              placeholder="mobile number"
+              className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
+              required
+              aria-label="Mobile number"
+            />
+            <button
+              type="submit"
+              className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm"
+              disabled={isSubmitting}
+              aria-label="Get OTP"
+            >
+              {isSubmitting ? "Sending..." : "Get OTP"}
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 };
