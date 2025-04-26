@@ -32,13 +32,13 @@ const LoginForm = () => {
       login({ email, password });
     } else {
       // Mobile login logic remains the same for now
-      setIsSubmitting(true);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        console.log("OTP sent to", mobileNumber);
-      }, 1000);
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      console.log("OTP sent to", mobileNumber);
+    }, 1000);
     }
   };
 
@@ -169,25 +169,25 @@ const LoginForm = () => {
       ) : (
         <>
           <p className="text-gray-600 mb-2 text-xs">Enter your mobile number below to login</p>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="tel"
-              value={mobileNumber}
-              onChange={handleMobileNumberChange}
-              placeholder="mobile number"
-              className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
-              required
-              aria-label="Mobile number"
-            />
-            <button
-              type="submit"
-              className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm"
-              disabled={isSubmitting}
-              aria-label="Get OTP"
-            >
-              {isSubmitting ? "Sending..." : "Get OTP"}
-            </button>
-          </form>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="tel"
+          value={mobileNumber}
+          onChange={handleMobileNumberChange}
+          placeholder="mobile number"
+          className="w-full border border-gray-700 rounded-md p-2.5 mb-3 bg-white text-gray-900 text-sm"
+          required
+          aria-label="Mobile number"
+        />
+        <button
+          type="submit"
+          className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm"
+          disabled={isSubmitting}
+          aria-label="Get OTP"
+        >
+          {isSubmitting ? "Sending..." : "Get OTP"}
+        </button>
+      </form>
         </>
       )}
     </div>

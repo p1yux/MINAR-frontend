@@ -1,84 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-// Mock data that will be replaced with API calls in the future
-const mockSiteCatalogs = [
-  {
-    id: 1,
-    title: "Bedsheets from Amazon",
-    sourceName: "Amazon",
-    startingPrice: "16,000",
-    imageUrl: "/images/search/amazon-bedsheets.jpg"
-  },
-  {
-    id: 2,
-    title: "Bedsheets from Flipkart",
-    sourceName: "Flipkart",
-    startingPrice: "15,000",
-    imageUrl: "/images/search/flipkart-bedsheets.jpg"
-  },
-  {
-    id: 3,
-    title: "Bedsheets from Myntra",
-    sourceName: "Myntra",
-    startingPrice: null,
-    imageUrl: "/images/search/myntra-bedsheets.jpg"
-  }
-];
-
-const mockProducts = [
-  {
-    id: 1,
-    title: "HP 15, 13th Gen Intel Core i5-13344, 16GB DDR4, 512GB SSD, (Win 11, Office 21, Silver, 1.59kg), Anti-Glare, 15.6-inch(39.6cm) FHD Laptop, Iris Xe Graphics, FHD Camera",
-    price: "56,990",
-    specs: null,
-    discount: "1500",
-    bank: "HDFC",
-    deliveryDate: "Sun, 27 Apr",
-    imageUrl: "/images/search/hp-laptop.jpg"
-  },
-  {
-    id: 2,
-    title: "HP 15, 13th Gen Intel Core i5-13344, 16GB DDR4, 512GB SSD, (Win 11, Office 21, Silver, 1.59kg), Anti-Glare, 15.6-inch(39.6cm) FHD Laptop, Iris Xe Graphics, FHD Camera",
-    price: "56,990",
-    specs: null,
-    discount: "1500",
-    bank: "HDFC",
-    deliveryDate: "Sun, 27 Apr",
-    imageUrl: "/images/search/hp-laptop.jpg"
-  },
-  {
-    id: 3,
-    title: "HP 15, 13th Gen Intel Core i5-13344, 16GB DDR4, 512GB SSD, (Win 11, Office 21, Silver, 1.59kg), Anti-Glare, 15.6-inch(39.6cm) FHD Laptop, Iris Xe Graphics, FHD Camera",
-    price: "56,990",
-    specs: null,
-    discount: "1500",
-    bank: "HDFC",
-    deliveryDate: "Sun, 27 Apr",
-    imageUrl: "/images/search/hp-laptop.jpg"
-  },
-  {
-    id: 4,
-    title: "HP 15, 13th Gen Intel Core i5-13344, 16GB DDR4, 512GB SSD, (Win 11, Office 21, Silver, 1.59kg), Anti-Glare, 15.6-inch(39.6cm) FHD Laptop, Iris Xe Graphics, FHD Camera",
-    price: "56,990",
-    specs: null,
-    discount: "1500",
-    bank: "HDFC",
-    deliveryDate: "Sun, 27 Apr",
-    imageUrl: "/images/search/hp-laptop.jpg"
-  },
-  {
-    id: 5,
-    title: "HP 15, 13th Gen Intel Core i5-13344, 16GB DDR4, 512GB SSD, (Win 11, Office 21, Silver, 1.59kg), Anti-Glare, 15.6-inch(39.6cm) FHD Laptop, Iris Xe Graphics, FHD Camera",
-    price: "56,990",
-    specs: null,
-    discount: "1500",
-    bank: "HDFC",
-    deliveryDate: "Sun, 27 Apr",
-    imageUrl: "/images/search/hp-laptop.jpg"
-  }
-];
+import { useSearchParams } from "next/navigation";
+import axiosInstance from "@/lib/axios";
 
 /**
  * Custom hook to fetch search data
@@ -86,32 +10,141 @@ const mockProducts = [
  * @returns {Object} Object containing search results
  */
 export const useSearchData = (query) => {
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [siteCatalogs, setSiteCatalogs] = useState([]);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(query || "");
+  const [suggestions, setSuggestions] = useState([]);
+  
+  // Get sort parameters from URL
+  const sortBy = searchParams?.get("sort") || "";
+  const sortOrder = searchParams?.get("order") || "asc";
+
+  // Helper function to validate URL
+  const safeImageUrl = (url) => {
+    if (!url) return "/images/search/placeholder.jpg";
+    
+    // Check if URL is already local
+    if (url.startsWith('/')) return url;
+    
+    try {
+      // Basic URL validation
+      return url && (url.startsWith('http://') || url.startsWith('https://')) 
+        ? url 
+        : "/images/search/placeholder.jpg";
+    } catch (e) {
+      return "/images/search/placeholder.jpg";
+    }
+  };
+  
+  // Helper function to parse numeric values from strings
+  const parseNumericValue = (str) => {
+    if (!str) return 0;
+    const numStr = str.toString().replace(/[^0-9.]/g, '');
+    return numStr ? parseFloat(numStr) : 0;
+  };
+  
+  // Helper function to get sortable rating value
+  const getRatingValue = (product) => {
+    if (!product.bank) return 0;
+    const ratingMatch = product.bank.match(/(\d+(\.\d+)?)/);
+    return ratingMatch ? parseFloat(ratingMatch[0]) : 0;
+  };
+  
+  // Helper function to sort products
+  const sortProducts = (products) => {
+    if (!sortBy) return products;
+    
+    return [...products].sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "price":
+          aValue = parseNumericValue(a.price);
+          bValue = parseNumericValue(b.price);
+          break;
+        case "rating":
+          aValue = getRatingValue(a);
+          bValue = getRatingValue(b);
+          break;
+        case "availability":
+          // Sort by availability status (in stock first)
+          aValue = a.deliveryDate?.toLowerCase().includes("in stock") ? 1 : 0;
+          bValue = b.deliveryDate?.toLowerCase().includes("in stock") ? 1 : 0;
+          break;
+        case "position":
+          aValue = a.id;
+          bValue = b.id;
+          break;
+        default:
+          return 0;
+      }
+      
+      // Apply sort order
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Make API request
+        const response = await axiosInstance.post(
+          "/api/search/",
+          { input_text: searchQuery },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         
-        // In the future, these will be actual API calls
-        // const siteCatalogsResponse = await fetch(`/api/search/site-catalogs?query=${searchQuery}`);
-        // const siteCatalogs = await siteCatalogsResponse.json();
+        const data = response.data.output.data[0];
         
-        // const productsResponse = await fetch(`/api/search/products?query=${searchQuery}`);
-        // const products = await productsResponse.json();
+        // Extract listings (site catalogs) and products from response
+        if (data && data.listings) {
+          setSiteCatalogs(data.listings.map((listing, index) => ({
+            id: index + 1,
+            title: listing.title || "Untitled Listing",
+            sourceName: listing.hostname || "Unknown Source",
+            startingPrice: listing.price ? listing.price.replace("Prices on matching products from ", "").replace("₹", "").trim() : null,
+            imageUrl: safeImageUrl(listing.image_url)
+          })));
+        }
         
-        setSiteCatalogs(mockSiteCatalogs);
-        setProducts(mockProducts);
+        if (data && data.products) {
+          const mappedProducts = data.products.map((product, index) => ({
+            id: index + 1,
+            title: product.title || "Untitled Product",
+            price: product.price ? product.price.replace("₹", "").trim() : "N/A",
+            specs: null,
+            discount: product.other_details?.Discount || null,
+            bank: product.other_details?.Rating || null,
+            deliveryDate: product.other_details?.Availability || "Check website",
+            imageUrl: safeImageUrl(product.image_url),
+            position: product.position || index + 1
+          }));
+          
+          // Apply sorting to products
+          setProducts(sortProducts(mappedProducts));
+        }
+        
+        // Extract suggestions for future searches if available
+        if (response.data.output.data[1] && response.data.output.data[1].search) {
+          setSuggestions(response.data.output.data[1].search.map(item => ({
+            id: item.sub_task,
+            query: item.product
+          })));
+        }
+        
         setIsLoading(false);
       } catch (err) {
-        setError(err.message || 'An error occurred');
+        console.error("Search error:", err.response || err);
+        setError(err.message || 'An error occurred while fetching search results');
         setIsLoading(false);
       }
     };
@@ -119,7 +152,7 @@ export const useSearchData = (query) => {
     if (searchQuery) {
       fetchData();
     }
-  }, [searchQuery]);
+  }, [searchQuery, sortBy, sortOrder]);
 
   const updateSearchQuery = (newQuery) => {
     setSearchQuery(newQuery);
@@ -129,6 +162,7 @@ export const useSearchData = (query) => {
     isLoading,
     siteCatalogs,
     products,
+    suggestions,
     error,
     searchQuery,
     updateSearchQuery

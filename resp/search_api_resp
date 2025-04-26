@@ -1,0 +1,326 @@
+payload = {
+    "input_text": "pink table"
+}
+
+
+response = {
+    "output": {
+        "status": "success",
+        "data": [
+            {
+                "listings": [
+                    {
+                        "title": "Pink Table from www.etsy.com",
+                        "price": "Prices on matching products from ₹ 15,465",
+                        "other_details": null,
+                        "url": "https://www.etsy.com/in-en/market/pink_table?ref=seller_tag_bottom_text-0",
+                        "image_url": null,
+                        "confidence_score": 1.0,
+                        "position": 1,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "title": "Pink Table from Amazon.in",
+                        "price": "Prices on matching products from ₹599.00",
+                        "other_details": null,
+                        "url": "https://www.amazon.in/NUKKAD-TALES-Enjoy-Little-Things/dp/B09X5QJ1KQ",
+                        "image_url": null,
+                        "confidence_score": 0.2,
+                        "position": 2,
+                        "hostname": "www.amazon.in"
+                    },
+                    {
+                        "title": "Pink Table from Myntra",
+                        "price": "Prices on matching products from Rs. 790",
+                        "other_details": null,
+                        "url": "https://www.myntra.com/pink-table-lamps",
+                        "image_url": null,
+                        "confidence_score": 0.2,
+                        "position": 3,
+                        "hostname": "www.myntra.com"
+                    }
+                ],
+                "products": [
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Sweet Pink Metal Side Table - Elegant Metal Legs- Space-Saving Design For Contemporary Home Decor",
+                        "price": "₹ 15,509",
+                        "other_details": {
+                            "Rating": "4.3 star",
+                            "Discount": "10% off",
+                            "Availability": "In stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1739540233/sweet-pink-metal-side-table-elegant?click_key=576dbf758544836c5889efcbb25b213f6042daeb%3A1739540233&click_sum=b3361001&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-4&pro=1&content_source=576dbf758544836c5889efcbb25b213f6042daeb%253A1739540233",
+                        "image_url": "https://i.etsystatic.com/45426242/c/1462/1462/0/601/il/3665e6/6073698191/il_300x300.6073698191_4mby.jpg",
+                        "position": 1,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Pink Onyx Side Table, Marble Round Top With Cross Legs, Elegant Modern Accent Table",
+                        "price": "₹ 163,082",
+                        "other_details": {
+                            "Rating": "4 star",
+                            "Availability": "In stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1826775769/pink-onyx-side-table-marble-round-top?click_key=7c8950d517ea11abf8a48f4a5ef9f45ddc982dee%3A1826775769&click_sum=44971a54&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-20&content_source=7c8950d517ea11abf8a48f4a5ef9f45ddc982dee%253A1826775769",
+                        "image_url": "https://i.etsystatic.com/39209569/r/il/38f09e/6498491827/il_300x300.6498491827_3esf.jpg",
+                        "position": 2,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Unusual Pink Funky Colorful Side Narrow Resin Coffee Table",
+                        "price": "₹ 48,516",
+                        "other_details": {
+                            "Rating": "4.5 star",
+                            "Availability": "in stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1516520751/unusual-pink-funky-colorful-side-narrow?click_key=4fb9abc2b73c2c5a1edb531cdd321659034971bb%3A1516520751&click_sum=484618a4&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-25&sts=1&content_source=4fb9abc2b73c2c5a1edb531cdd321659034971bb%253A1516520751",
+                        "image_url": "https://i.etsystatic.com/27487691/r/il/d30549/5058723854/il_300x300.5058723854_kxe1.jpg",
+                        "position": 3,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Table My Little Pony Resin Pink Glitter Coffee Table",
+                        "price": "₹ 18,825",
+                        "other_details": {
+                            "Rating": "4.9 star",
+                            "Size": "36cm with 3 wrought iron legs 42cm",
+                            "Availability": "in stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1580346765/table-my-little-pony-resin-pink-glitter?click_key=24781280ecdceb21e0b95b29afbe0c9dd919ee2b%3A1580346765&click_sum=76325a55&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-9&content_source=24781280ecdceb21e0b95b29afbe0c9dd919ee2b%253A1580346765",
+                        "image_url": "https://i.etsystatic.com/16003946/r/il/738955/6422014339/il_300x300.6422014339_h7y4.jpg",
+                        "position": 4,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Resin Geode Accent Side Table. White & Rose Quartz Pink Agate Style Decorative Luxury Table W/ Gold Hairpin Legs",
+                        "price": "₹ 46,497",
+                        "other_details": {},
+                        "url": "https://www.etsy.com/in-en/listing/988812181/resin-geode-accent-side-table-white-rose?click_key=cee59ea775f3f4f260e92867ab78f4a6a88cc0c8%3A988812181&click_sum=5a9fa0b5&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-17&content_source=cee59ea775f3f4f260e92867ab78f4a6a88cc0c8%253A988812181",
+                        "image_url": "https://i.etsystatic.com/22514946/r/il/fd35fe/2970496184/il_300x300.2970496184_jlot.jpg",
+                        "position": 5,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Kopar Round Antique Pink Dining Table",
+                        "price": "₹ 90,618",
+                        "other_details": {},
+                        "url": "https://www.etsy.com/in-en/listing/1434554089/kopar-round-antique-pink-dining-table?click_key=a9f0d17cb73e1c60999d090af29bb4d1aaa6c5fd%3A1434554089&click_sum=a1d57949&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-11&frs=1&etp=1&sts=1&content_source=a9f0d17cb73e1c60999d090af29bb4d1aaa6c5fd%253A1434554089",
+                        "image_url": "https://i.etsystatic.com/25480765/c/1990/1990/0/1/il/c2943b/5554246907/il_300x300.5554246907_6soa.jpg",
+                        "position": 6,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Round Colorful Funky Abstract Boho Resin Table, Pink Purple Groovy Vibrant Wood Rainbow Retro Hippi End Side Cool Luxury Center Coffee Table",
+                        "price": "₹ 20,679",
+                        "other_details": {},
+                        "url": "https://www.etsy.com/in-en/listing/1482142410/round-colorful-funky-abstract-boho-resin?click_key=28a1f95d5fdb4b63a29993bfba80f9779121181e%3A1482142410&click_sum=daacc714&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-32&sts=1&content_source=28a1f95d5fdb4b63a29993bfba80f9779121181e%253A1482142410",
+                        "image_url": "https://i.etsystatic.com/27487691/r/il/f46b5f/4969714054/il_300x300.4969714054_kqkc.jpg",
+                        "position": 7,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Table Pink Candy Resin Pink Kitsch Sweets & Candy Coffee Table Side Table Resin Handmade Decor Resin Top 36Cm 3 Wrought Iron Legs 42Cm",
+                        "price": "₹ 22,354",
+                        "other_details": {
+                            "Rating": "4.9 star",
+                            "Availability": "in stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/953784056/table-pink-candy-resin-pink-kitsch?click_key=e87b27bc23df8aabe3ae2dc20b4396f473248a44%3A953784056&click_sum=cfdbe244&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-23&content_source=e87b27bc23df8aabe3ae2dc20b4396f473248a44%253A953784056",
+                        "image_url": "https://i.etsystatic.com/16003946/c/1771/1771/239/614/il/5b928d/6090188429/il_300x300.6090188429_s8jz.jpg",
+                        "position": 8,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "A Pair Of Gorgeous Hand Painted Pink, Iridescent White And Gold Side Tables",
+                        "price": "₹ 15,465",
+                        "other_details": {},
+                        "url": "https://www.etsy.com/in-en/listing/1811921485/a-pair-of-gorgeous-hand-painted-pink?click_key=b14732334294daa60ec785cbd48d4cfdaa98f72c%3A1811921485&click_sum=81c81bbb&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-27&content_source=b14732334294daa60ec785cbd48d4cfdaa98f72c%253A1811921485",
+                        "image_url": "https://i.etsystatic.com/20632630/r/il/bc639a/6360371972/il_300x300.6360371972_caoy.jpg",
+                        "position": 9,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Elegant Pink Marble Table, Round Pink Marble Table, Handcrafted Pink Marble Table, Designer Pink Marble Coffee Table",
+                        "price": "₹ 44,168",
+                        "other_details": {
+                            "Discount: 15% off, Original Price: ₹ 51,962, Availability: In stock.": ""
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1874841614/elegant-pink-marble-tableround-pink?click_key=ea95c47709da8fd0f09fa2f59afa873aea911c39%3A1874841614&click_sum=6da107fa&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-8&pro=1&content_source=ea95c47709da8fd0f09fa2f59afa873aea911c39%253A1874841614",
+                        "image_url": "https://i.etsystatic.com/58151262/c/977/977/39/39/il/81f5a5/6719865716/il_300x300.6719865716_7y09.jpg",
+                        "position": 10,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Resin Candy Table, Pink Coffee Table",
+                        "price": "₹ 17,136",
+                        "other_details": {
+                            "Rating": "4.5 star",
+                            "Availability": "in stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1634592303/resin-candy-table-pink-coffee-table?click_key=4caed6521c0bcefd34c770561602c22164f39ba0%3A1634592303&click_sum=d035ba8b&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-3&etp=1&content_source=4caed6521c0bcefd34c770561602c22164f39ba0%253A1634592303",
+                        "image_url": "https://i.etsystatic.com/21362371/c/2122/2122/63/534/il/289b85/5593089002/il_300x300.5593089002_4qd9.jpg",
+                        "position": 11,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "confidence_score": 5.0,
+                        "title": "Kopar Table In Bright Pink Elegant Minimal Feminine Japandi Round Circular Kitchen Dining Table",
+                        "price": "₹ 100,698",
+                        "other_details": {
+                            "Rating": "4.3 star",
+                            "Availability": "In stock"
+                        },
+                        "url": "https://www.etsy.com/in-en/listing/1418073684/kopar-table-in-bright-pink-elegant?click_key=fff87560dc432814f60dd24ce6b055d7b7352577%3A1418073684&click_sum=9c6ee86a&ls=s&ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=pink+table&ref=search_grid-608857-1-21&frs=1&etp=1&sts=1&content_source=fff87560dc432814f60dd24ce6b055d7b7352577%253A1418073684",
+                        "image_url": "https://i.etsystatic.com/25480765/c/2008/2008/0/1/il/83273d/5506122022/il_300x300.5506122022_7uey.jpg",
+                        "position": 12,
+                        "hostname": "www.etsy.com"
+                    },
+                    {
+                        "title": "Wb Side Table Pink",
+                        "price": "₹25,300.00",
+                        "url": "https://mohh.com/products/wb-side-table?variant=46237489430748&country=IN&currency=INR&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&srsltid=AfmBOopEeKv-rTSJ2OkZKY22Os9ygfun_ALrWfYUC7ZoLpNtOdqojme5DSE",
+                        "image_url": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcReavTgpicM1Pd_qcIxu4F7DjX2SF_tsU7sf0T7Mw572tSMrHQtCXbaESOk2stHz1mXkW075g&usqp=CAE",
+                        "source": "Mohh",
+                        "other_details": {
+                            "Delivery": "Free delivery"
+                        },
+                        "confidence_score": 4.0,
+                        "hostname": "mohh.com",
+                        "position": 13
+                    },
+                    {
+                        "confidence_score": 4.0,
+                        "title": "Nukkad Tales Enjoy The Little Things - Pink Table Decor",
+                        "price": "Not specified",
+                        "other_details": {
+                            "Availability": "Not specified"
+                        },
+                        "url": "https://www.amazon.in/${sign-in-url}",
+                        "image_url": "https://m.media-amazon.com/images/I/41txf+oH3pL._SS75_.jpg",
+                        "position": 29,
+                        "hostname": "www.amazon.in"
+                    },
+                    {
+                        "confidence_score": 4.0,
+                        "title": "Homesake Pink & Beige Contemporary Wooden Frustum Shade Table Lamp",
+                        "price": "Rs. 2179",
+                        "other_details": {
+                            "Rating": "4.1 star",
+                            "Availability": "In stock"
+                        },
+                        "url": "https://www.myntra.com/table-lamps/homesake/homesake-pink--beige-contemporary-wooden-frustum-shade-table-lamp/30303199/buy",
+                        "image_url": "https://assets.myntassets.com/dpr_2,q_60,w_210,c_limit,fl_progressive/assets/images/30303199/2024/7/20/0b3720cf-7ee6-4485-9e98-640be1b6b60c1721475841753TableLamps2.jpg",
+                        "position": 15,
+                        "hostname": "www.myntra.com"
+                    },
+                ]
+            },
+            {
+                "remaining": [],
+                "search": [
+                    {
+                        "sub_task": "Search for Wooden pink side table",
+                        "sub_task_workflow": "search",
+                        "product": "Wooden pink side table",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Search for Pink accent table",
+                        "sub_task_workflow": "search",
+                        "product": "Pink accent table",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Search for Round pink coffee table",
+                        "sub_task_workflow": "search",
+                        "product": "Round pink coffee table",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Search for other products in the category of Furniture",
+                        "sub_task_workflow": "search",
+                        "product": "Furniture",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Search for pink table on other platforms to get more deals",
+                        "sub_task_workflow": "search",
+                        "product": "pink table",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    }
+                ],
+                "track": [
+                    {
+                        "sub_task": "Track price changes for this product",
+                        "sub_task_workflow": "track",
+                        "metric": "price",
+                        "frequency": {
+                            "number": 1,
+                            "metric": "days"
+                        },
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Track deals and discounts on this product",
+                        "sub_task_workflow": "track",
+                        "metric": "discount",
+                        "frequency": {
+                            "number": 1,
+                            "metric": "days"
+                        },
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Track availability for this product",
+                        "sub_task_workflow": "track",
+                        "metric": "availability",
+                        "frequency": {
+                            "number": 1,
+                            "metric": "days"
+                        },
+                        "account_or_product": "product",
+                        "classification_done": true
+                    }
+                ],
+                "ask": [
+                    {
+                        "sub_task": "Ask about summary of reviews for this product",
+                        "sub_task_workflow": "information",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Ask about the best EMI policy for this product",
+                        "sub_task_workflow": "information",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    },
+                    {
+                        "sub_task": "Ask about summary of the product details",
+                        "sub_task_workflow": "information",
+                        "account_or_product": "product",
+                        "classification_done": true
+                    }
+                ]
+            }
+        ]
+    }
+}

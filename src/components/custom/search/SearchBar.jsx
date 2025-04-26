@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const exampleSuggestions = [
   "Where can I get cute red dresses below 3000",
@@ -15,19 +16,41 @@ const exampleSuggestions = [
   // "Online stores that sell wooden coffee tables below 5000",
 ];
 
-const SearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+const SearchBar = ({ initialQuery = "", onSearch }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(initialQuery || "");
+  
+  // Initialize search query from URL parameter
+  useEffect(() => {
+    const queryParam = searchParams.get("q");
+    if (queryParam) {
+      setSearchQuery(queryParam);
+    }
+  }, [searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Searching for:", searchQuery);
-    // Implement search functionality here
+    
+    if (!searchQuery.trim()) return;
+    
+    // If onSearch prop is provided, call it
+    if (onSearch) {
+      onSearch(searchQuery);
+    } else {
+      // Otherwise navigate to search page with query parameter
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
-    // Optional: auto-submit the search
-    console.log("Selected suggestion:", suggestion);
+    // Call onSearch if provided, otherwise navigate
+    if (onSearch) {
+      onSearch(suggestion);
+    } else {
+      router.push(`/search?q=${encodeURIComponent(suggestion)}`);
+    }
   };
 
   return (
@@ -40,6 +63,7 @@ const SearchBar = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full px-5 py-3.5 rounded-2xl border-none shadow-lg focus:outline-none text-gray-800 text-base bg-white"
+          aria-label="Search"
         />
         <button
           type="submit"
@@ -52,6 +76,7 @@ const SearchBar = () => {
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -70,6 +95,8 @@ const SearchBar = () => {
             key={index}
             onClick={() => handleSuggestionClick(suggestion)}
             className="bg-white/90 hover:bg-white text-gray-800 text-xs py-2 px-4 rounded-full shadow-sm whitespace-nowrap transition-colors duration-200"
+            tabIndex={0}
+            aria-label={`Search for ${suggestion}`}
           >
             {suggestion}
           </button>
