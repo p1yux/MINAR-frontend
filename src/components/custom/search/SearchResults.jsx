@@ -57,6 +57,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                       sourceName={catalog.sourceName}
                       startingPrice={catalog.startingPrice}
                       imageUrl={catalog.imageUrl}
+                      productUrl={catalog.productUrl}
                     />
                   </div>
                 ))}
@@ -91,6 +92,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                       bank={product.bank}
                       deliveryDate={product.deliveryDate}
                       imageUrl={product.imageUrl}
+                      productUrl={product.productUrl}
                     />
                   </div>
                 ))}

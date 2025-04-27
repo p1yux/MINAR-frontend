@@ -73,6 +73,7 @@ const ExploreBazaar = () => {
               key={category.id}
               title={category.title}
               imageUrl={category.imageUrl}
+              url={category.url}
             />
           ))}
         </div>
