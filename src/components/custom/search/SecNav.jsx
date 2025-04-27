@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SortDialog from "./SortDialog";
 import ExploreDialog from "./ExploreDialog";
@@ -13,9 +13,10 @@ const SecNav = () => {
   const [isSortDialogOpen, setIsSortDialogOpen] = useState(false);
   const [isExploreDialogOpen, setIsExploreDialogOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef(null);
   
   // Get suggestions from search data hook if available
-  const { suggestions = [] } = useSearchData(searchParams.get("q") || "");
+  const { suggestions = [], updateSearchQuery } = useSearchData(searchParams.get("q") || "");
   
   // Initialize search query from URL parameter
   useEffect(() => {
@@ -33,11 +34,17 @@ const SecNav = () => {
     // Set searching state for UI feedback
     setIsSearching(true);
     
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     // Navigate to search page with query parameter
     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     
-    // Reset searching state after a short delay to allow for page transition
-    setTimeout(() => {
+    // Let the URL change complete, then update the search query
+    // This ensures we only have one search operation happening
+    searchTimeoutRef.current = setTimeout(() => {
       setIsSearching(false);
     }, 500);
   };

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import SiteCatalogCard from "./SiteCatalogCard";
 import ProductsCard from "./ProductsCard";
 import SearchSkeleton from "./SearchSkeleton";
@@ -12,8 +12,16 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     siteCatalogs, 
     products, 
     error,
-    searchQuery 
+    searchQuery,
+    updateSearchQuery
   } = useSearchData(initialQuery);
+
+  // Set initial search query only once
+  useEffect(() => {
+    if (initialQuery && initialQuery !== searchQuery) {
+      updateSearchQuery(initialQuery);
+    }
+  }, [initialQuery]);
 
   if (isLoading) {
     return <SearchSkeleton />;
