@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SiteCatalogCard from "./SiteCatalogCard";
 import ProductsCard from "./ProductsCard";
 import SearchSkeleton from "./SearchSkeleton";
+import Pagination from "./Pagination";
 import useSearchData from "@/hooks/search/useSearchData";
+
+const ITEMS_PER_PAGE = 5;
 
 const SearchResults = ({ initialQuery = "laptops" }) => {
   const { 
@@ -15,6 +18,30 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     searchQuery,
     updateSearchQuery
   } = useSearchData(initialQuery);
+  
+  const [currentSiteCatalogPage, setCurrentSiteCatalogPage] = useState(1);
+  const [currentProductPage, setCurrentProductPage] = useState(1);
+  
+  // Calculate total pages for each section
+  const totalSiteCatalogPages = Math.ceil(siteCatalogs.length / ITEMS_PER_PAGE);
+  const totalProductPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  
+  // Get paginated data
+  const paginatedSiteCatalogs = siteCatalogs.slice(
+    (currentSiteCatalogPage - 1) * ITEMS_PER_PAGE,
+    currentSiteCatalogPage * ITEMS_PER_PAGE
+  );
+  
+  const paginatedProducts = products.slice(
+    (currentProductPage - 1) * ITEMS_PER_PAGE,
+    currentProductPage * ITEMS_PER_PAGE
+  );
+
+  // Reset pagination when search query changes
+  useEffect(() => {
+    setCurrentSiteCatalogPage(1);
+    setCurrentProductPage(1);
+  }, [searchQuery]);
 
   // Set initial search query only once
   useEffect(() => {
@@ -50,7 +77,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
             
             <div className="max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
               <div className="space-y-5">
-                {siteCatalogs.map(catalog => (
+                {paginatedSiteCatalogs.map(catalog => (
                   <div key={catalog.id} className="mb-2">
                     <SiteCatalogCard
                       title={catalog.title}
@@ -68,6 +95,15 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                   </div>
                 )}
               </div>
+              
+              {/* Pagination for site catalogs */}
+              {siteCatalogs.length > ITEMS_PER_PAGE && (
+                <Pagination
+                  currentPage={currentSiteCatalogPage}
+                  totalPages={totalSiteCatalogPages}
+                  onPageChange={setCurrentSiteCatalogPage}
+                />
+              )}
             </div>
           </div>
           
@@ -82,7 +118,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
             
             <div className="max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
               <div className="space-y-3">
-                {products.map(product => (
+                {paginatedProducts.map(product => (
                   <div key={product.id} className="mb-2">
                     <ProductsCard
                       title={product.title}
@@ -103,6 +139,16 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                   </div>
                 )}
               </div>
+              
+              {/* Pagination for products */}
+              {products.length > ITEMS_PER_PAGE && (
+                <Pagination
+                  currentPage={currentProductPage}
+                  totalPages={totalProductPages}
+                  onPageChange={setCurrentProductPage}
+                  containerClassName="mt-4"
+                />
+              )}
             </div>
           </div>
         </div>
