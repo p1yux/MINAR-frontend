@@ -18,7 +18,7 @@ export default async function SearchPage({ searchParams }) {
   const query = searchParams?.q || "";
   
   return (
-    <main className="bg-[#faf8f5]">
+    <main className="bg-[#faf8f5] w-full">
         <Suspense fallback={<SecHeroLoading />}>
             <SecHero />
         </Suspense>
