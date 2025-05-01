@@ -8,7 +8,7 @@ import { useProfile } from "@/providers/ProfileProvider";
 import { useLogoutUser } from "@/hooks/auth/useLogoutUser";
 
 // Define public routes
-const publicRoutes = ['/login', '/signup', '/forgot-password'];
+const publicRoutes = ['/login', '/signup', '/verify'];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -60,7 +60,7 @@ const Navbar = () => {
                 MINAR
               </div>
             </Link>
-            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (  
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/verify" && (  
             <div className="hidden md:flex space-x-4">
               <Link href="#bazaar" className="text-gray-900 hover:text-gray-700 text-sm">
                 Bazaar
@@ -86,15 +86,15 @@ const Navbar = () => {
 
           {/* Right section - Actions */}
           <div className="flex items-center space-x-3">
-            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (
+            {/* {pathname !== "/login" && pathname !== "/signup" && pathname !== "/verify" && (
             <Link
               href="/track"
               className="px-4 py-1.5 rounded-full border border-gray-700 text-xs text-gray-900 hover:bg-gray-100"
             >
               Product Tracking
             </Link>
-            )}
-            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && (
+            )} */}
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/verify" && (
             <Link
               href="/wishlist"
               className="px-4 py-1.5 rounded-full border border-gray-700 text-xs text-gray-900 hover:bg-gray-100 flex items-center"

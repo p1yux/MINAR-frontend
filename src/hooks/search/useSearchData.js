@@ -18,6 +18,13 @@ export const useSearchData = (query) => {
   const [searchQuery, setSearchQuery] = useState(query || "");
   const [suggestions, setSuggestions] = useState([]);
   
+  // Add state for recommendations
+  const [searchRecommendations, setSearchRecommendations] = useState({
+    search: [],
+    track: [],
+    ask: []
+  });
+  
   // Get sort parameters from URL
   const sortBy = searchParams?.get("sort") || "";
   const sortOrder = searchParams?.get("order") || "asc";
@@ -163,12 +170,25 @@ export const useSearchData = (query) => {
           setProducts(sortProducts(mappedProducts));
         }
         
-        // Extract suggestions for future searches if available
-        if (response.data.output.data[1] && response.data.output.data[1].search) {
-          setSuggestions(response.data.output.data[1].search.map(item => ({
+        // Extract recommendations and suggestions
+        if (response.data.output.data[1]) {
+          const recommendationData = response.data.output.data[1];
+          
+          // Set search recommendations
+          setSearchRecommendations({
+            search: recommendationData.search || [],
+            track: recommendationData.track || [],
+            ask: recommendationData.ask || []
+          });
+          
+          // Also set suggestions for future searches if available
+          setSuggestions(recommendationData.search 
+            ? recommendationData.search.map(item => ({
             id: item.sub_task,
             query: item.product
-          })));
+              }))
+            : []
+          );
         }
         
         setIsLoading(false);
@@ -204,7 +224,8 @@ export const useSearchData = (query) => {
     suggestions,
     error,
     searchQuery,
-    updateSearchQuery
+    updateSearchQuery,
+    searchRecommendations
   };
 };
 

@@ -52,8 +52,41 @@ export const useLoginUser = () => {
         
         // Handle API errors
         if (error.response) {
-          // Server responded with a status code outside of 2xx range
-          const errorMessage = error.response.data?.detail || error.response.data?.message || 'An error occurred';
+          // Check for 401 status code and email verification error messages in various formats
+          if (error.response.status === 401) {
+            const errorData = error.response.data;
+            
+            // Check common patterns for email verification error messages
+            const isEmailNotVerified = 
+              // Direct string messages
+              errorData?.detail === "Email not verified" || 
+              errorData?.message === "Email not verified" || 
+              errorData?.error === "Email not verified" ||
+              // Array of error messages
+              (Array.isArray(errorData?.non_field_errors) && 
+               errorData.non_field_errors.some(msg => 
+                 typeof msg === 'string' && msg.toLowerCase().includes('email') && msg.toLowerCase().includes('verif')
+               )) ||
+              // String contains verification keywords
+              (typeof errorData === 'string' && 
+               errorData.toLowerCase().includes('email') && 
+               errorData.toLowerCase().includes('verif')) ||
+              // Check various parts of the response for verification keywords
+              Object.values(errorData || {}).some(
+                val => typeof val === 'string' && 
+                val.toLowerCase().includes('email') && 
+                val.toLowerCase().includes('verif')
+              );
+            
+            if (isEmailNotVerified) {
+              throw new Error("email_not_verified");
+            }
+          }
+          
+          // Server responded with other status code outside of 2xx range
+          const errorMessage = error.response.data?.detail || 
+                              error.response.data?.message || 
+                              (typeof error.response.data === 'string' ? error.response.data : 'An error occurred');
           setApiErrors(errorMessage);
           throw new Error(errorMessage);
         } else if (error.request) {
@@ -77,6 +110,22 @@ export const useLoginUser = () => {
       router.push("/");
     },
     onError: (error) => {
+      if (error.message === "email_not_verified") {
+        toast.info("Please verify your email to continue");
+        
+        // Store the email in session storage for the verify page
+        try {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("pending_verification_email", loginMutation.variables?.email || "");
+          }
+        } catch (e) {
+          console.error("Session storage error:", e);
+        }
+        
+        router.push("/verify");
+        return;
+      }
+      
       toast.error(error.message || "Login failed");
     }
   });

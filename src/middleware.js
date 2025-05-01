@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/login', '/signup', '/forgot-password'];
+const publicRoutes = ['/login', '/signup', '/verify'];
 
 // Define authentication routes where redirect to home if already authenticated
-const authRoutes = ['/login', '/signup', '/forgot-password'];
+const authRoutes = ['/login', '/signup', '/verify'];
 
 export async function middleware(request) {
   const path = request.nextUrl.pathname;
@@ -54,10 +54,10 @@ export const config = {
 // import { cookies } from "next/headers";
 
 // // Define public routes that don't require authentication
-// const publicRoutes = ['/login', '/signup', '/forgot-password'];
+// const publicRoutes = ['/login', '/signup', '/verify'];
 
 // // Define authentication routes where redirect to home if already authenticated
-// const authRoutes = ['/login', '/signup', '/forgot-password'];
+// const authRoutes = ['/login', '/signup', '/verify'];
 
 // export async function middleware(request) {
 //   // Get the path from the request

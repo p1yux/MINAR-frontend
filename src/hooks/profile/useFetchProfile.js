@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 
 // Define public routes where profile fetching errors should be silent
-const publicRoutes = ['/login', '/signup', '/forgot-password'];
+const publicRoutes = ['/login', '/signup', '/verify'];
 
 export const useFetchProfile = () => {
   const pathname = usePathname();

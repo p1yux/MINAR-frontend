@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
             <main className="min-h-screen">
             {children}
             </main>
-            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/forgot-password" && <Footer />}
+            {pathname !== "/login" && pathname !== "/signup" && pathname !== "/verify" && <Footer />}
           </ProfileProvider>
         </QueryProvider>
       </body>

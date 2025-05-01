@@ -56,7 +56,7 @@ const LoginForm = () => {
         </Link>
       </p>
 
-      <button
+      {/* <button
         onClick={handleGoogleSignIn}
         className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-md mb-5 bg-gray-900 text-white text-sm"
         type="button"
@@ -87,13 +87,13 @@ const LoginForm = () => {
           />
         </svg>
         <span>Sign in with Google</span>
-      </button>
+      </button> */}
 
-      <div className="flex items-center mb-5">
+      {/* <div className="flex items-center mb-5">
         <div className="flex-1 h-px bg-gray-300"></div>
         <span className="px-3 text-xs text-gray-500">OR</span>
         <div className="flex-1 h-px bg-gray-300"></div>
-      </div>
+      </div> */}
 
       <div className="mb-4 flex justify-between">
         <button
@@ -108,7 +108,7 @@ const LoginForm = () => {
         >
           Email
         </button>
-        <button
+        {/* <button
           type="button"
           onClick={() => setLoginMethod("mobile")}
           className={`text-sm px-3 py-1 rounded ${
@@ -119,7 +119,7 @@ const LoginForm = () => {
           aria-label="Use mobile login"
         >
           Mobile
-        </button>
+        </button> */}
       </div>
       
       {apiErrors && (

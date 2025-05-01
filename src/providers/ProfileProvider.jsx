@@ -6,7 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { usePathname } from "next/navigation";
 
 // Define public routes
-const publicRoutes = ['/login', '/signup', '/forgot-password'];
+const publicRoutes = ['/login', '/signup', '/verify'];
 
 // Create the context
 const ProfileContext = createContext(null);

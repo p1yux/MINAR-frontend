@@ -14,8 +14,16 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     products, 
     error,
     searchQuery,
-    updateSearchQuery
+    updateSearchQuery,
+    searchRecommendations
   } = useSearchData(initialQuery);
+  
+  // State for storing recommendations from API
+  const [recommendations, setRecommendations] = useState({
+    search: [],
+    track: [],
+    ask: []
+  });
   
   const [activeBrowser, setActiveBrowser] = useState({
     isOpen: false,
@@ -46,6 +54,18 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     }
   }, [initialQuery]);
 
+  // Update recommendations whenever searchRecommendations changes
+  useEffect(() => {
+    if (searchRecommendations) {
+      console.log("Search recommendations updated:", searchRecommendations);
+      setRecommendations({
+        search: searchRecommendations.search || [],
+        track: searchRecommendations.track || [],
+        ask: searchRecommendations.ask || []
+      });
+    }
+  }, [searchRecommendations]);
+
   // Handle browser session lifecycle
   useEffect(() => {
     if (activeBrowser.isOpen && !sessionStartedRef.current && activeBrowser.url) {
@@ -60,6 +80,17 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
       });
     }
   }, [activeBrowser.isOpen, activeBrowser.url, startSession, stopSession]);
+
+  // Update recommendations from search data when browser opens
+  useEffect(() => {
+    if (activeBrowser.isOpen && searchRecommendations) {
+      setRecommendations({
+        search: searchRecommendations.search || [],
+        track: searchRecommendations.track || [],
+        ask: searchRecommendations.ask || []
+      });
+    }
+  }, [activeBrowser.isOpen, searchRecommendations]);
 
   // Draw each new frame
   useEffect(() => {
@@ -139,18 +170,18 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
 
   return (
     <div className="py-10 bg-[#faf8f5] ">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className={`container mx-auto px-4 ${activeBrowser.isOpen ? 'w-full' : 'max-w-7xl'}`}>
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main content container - always visible but resized when browser is open */}
           <div className={`flex flex-col lg:flex-row w-full gap-4 ${activeBrowser.isOpen ? 'lg:w-[30%]' : ''}`}>
             {/* Left column - Site Catalogs */}
             <div className={`lg:w-[35%] border-r border-gray-200 pr-3 ${activeBrowser.isOpen ? 'lg:w-[48%] pr-2' : ''}`}>
-              <div className="mb-2">
-                <h2 className={`text-lg font-semibold mb-1 ${activeBrowser.isOpen ? 'text-sm' : ''}`}>Site Catalogs</h2>
+              <div className="mb-2 text-center">
+                <h2 className={`text-lg font-semibold mb-1  ${activeBrowser.isOpen ? 'text-sm' : ''}`}>Site Catalogs</h2>
                 <p className={`text-xs text-gray-600 ${activeBrowser.isOpen ? 'text-[10px]' : ''}`}>All search results from source websites</p>
               </div>
               
-              <div className={`${activeBrowser.isOpen ? 'max-h-[80vh]' : 'max-h-[100vh]'} overflow-y-auto pr-2 custom-scrollbar`}>
+              <div className={`${activeBrowser.isOpen ? 'max-h-[90vh]' : 'max-h-[100vh]'} overflow-y-auto pr-2 custom-scrollbar`}>
                 <div className="space-y-5">
                   {siteCatalogs.map(catalog => (
                     <div key={catalog.id} className={`mb-2 ${activeBrowser.isOpen ? 'transform scale-90 origin-top-left' : ''}`}>
@@ -177,14 +208,14 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
             
             {/* Right column - Products - always visible */}
             <div className={`lg:w-[65%] ${activeBrowser.isOpen ? 'lg:w-[52%]' : ''}`}>
-              <div className={`mb-2 ${activeBrowser.isOpen ? 'mb-1' : 'mb-4'}`}>
+              <div className={`mb-2 text-center ${activeBrowser.isOpen ? 'mb-1' : 'mb-4'}`}>
                 <h2 className={`text-lg font-semibold mb-1 ${activeBrowser.isOpen ? 'text-sm' : ''}`}>Recommended products</h2>
                 <p className={`text-xs text-gray-600 ${activeBrowser.isOpen ? 'text-[10px]' : ''}`}>
                   {searchQuery ? `Results for "${searchQuery}"` : "Popular products"}
                 </p>
               </div>
               
-              <div className={`${activeBrowser.isOpen ? 'max-h-[80vh]' : 'max-h-[100vh]'} overflow-y-auto pr-2 custom-scrollbar`}>
+              <div className={`${activeBrowser.isOpen ? 'max-h-[90vh]' : 'max-h-[100vh]'} overflow-y-auto pr-2 custom-scrollbar`}>
                 <div className="space-y-3">
                   {products.map(product => (
                     <div key={product.id} className={`mb-2 ${activeBrowser.isOpen ? 'transform scale-90 origin-top-left' : ''}`}>
@@ -218,7 +249,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
             <div className="w-full lg:w-[70%] flex flex-col">
               {/* Browser window */}
               <div className="bg-white rounded-lg shadow-xl overflow-hidden h-[60vh] flex flex-col">
-                <div className="flex items-center justify-between p-3 border-b">
+                {/* <div className="flex items-center justify-between p-3 border-b">
                   <h3 className="text-base font-semibold text-gray-900">
                     Interactive Browser {isConnected && "(Connected)"}
                   </h3>
@@ -241,7 +272,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
                 
                 <div className="relative flex-1 p-0 overflow-hidden">
                   {isBrowserLoading && !imageBitmap && (
@@ -272,72 +303,168 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                     onWheel={handleWheel}
                     tabIndex={0}
                   />
+                  <button
+                    onClick={handleCloseBrowser}
+                    className="absolute top-2 right-2 z-10 bg-white text-gray-600 p-1.5 hover:bg-gray-200 rounded-lg shadow-md"
+                    aria-label="Close browser"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </div>
               
               {/* Search bar and recommendations below browser */}
               <div className="mt-4 space-y-3">
-                {/* Search bar */}
-                <div className="relative w-full">
-                  <form onSubmit={handleBrowserSearch} className="flex">
-                    <div className="relative flex-grow">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                        </svg>
+                {/* Search bar with buttons */}
+                <div className="relative w-full rounded-full border border-gray-300 bg-white overflow-hidden">
+                  <div className="flex items-center">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                      <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center">
+                        {/* Black circle placeholder */}
                       </div>
-                      <input
-                        type="text"
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Search for anything...Track any detail for this product...Ask about any detail and review of this product..."
-                        value={browserSearchQuery}
-                        onChange={(e) => setBrowserSearchQuery(e.target.value)}
-                      />
                     </div>
-                    <button
-                      type="submit"
-                      className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 bg-gray-50 text-sm text-gray-700 hover:bg-gray-100 rounded-r-md"
-                    >
-                      Search
-                    </button>
-                  </form>
+                    <input
+                      type="text"
+                      className="block w-full pl-14 pr-3 py-2.5 bg-white text-sm focus:outline-none"
+                      placeholder="Search for anything...Track any detail for this product...Ask about any detail and review of this product..."
+                      value={browserSearchQuery}
+                      onChange={(e) => setBrowserSearchQuery(e.target.value)}
+                    />
+                    <div className="flex items-center space-x-2 pr-2">
+                      <button 
+                        type="button" 
+                        className="rounded-full px-3 py-1 border border-gray-300 text-xs"
+                      >
+                        <span className="flex items-center">
+                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                          </svg>
+                          Search
+                        </span>
+                      </button>
+                      <button 
+                        type="button" 
+                        className="rounded-full px-3 py-1 border border-gray-300 text-xs"
+                      >
+                        <span className="flex items-center">
+                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-5h2v2H9v-2zm0-6h2v4H9V5z" />
+                          </svg>
+                          Track
+                        </span>
+                      </button>
+                      <button 
+                        type="button" 
+                        className="rounded-full px-3 py-1 border border-gray-300 text-xs"
+                      >
+                        <span className="flex items-center">
+                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          Ask
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 
-                {/* Recommendation tabs */}
-                <div className="flex w-full border rounded-md overflow-hidden">
-                  <button className="flex-1 py-2 px-4 bg-blue-50 border-r text-xs font-medium">
-                    Search Recommendations
-                  </button>
-                  <button className="flex-1 py-2 px-4 bg-white border-r text-xs font-medium">
-                    Track Recommendations
-                  </button>
-                  <button className="flex-1 py-2 px-4 bg-white text-xs font-medium">
-                    Ask Recommendations
-                  </button>
-                </div>
-                
-                {/* Recommendation content */}
-                <div className="border rounded-md p-3 bg-white">
-                  <ul className="space-y-2">
-                    <li className="flex items-center text-xs text-gray-700">
-                      <svg className="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      Search for related products (I recc) (AI determined) eg: phones
-                    </li>
-                    <li className="flex items-center text-xs text-gray-700">
-                      <svg className="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      Search for related products 2 recc (AI determined) eg: pink covers
-                    </li>
-                    <li className="flex items-center text-xs text-gray-700">
-                      <svg className="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      Search for this exact product on other platforms to get more deals
-                    </li>
-                  </ul>
+                {/* Three recommendation sections */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Search Recommendations */}
+                  <div className="bg-white rounded-md overflow-hidden">
+                    <div className="p-2 border-b border-gray-700 bg-[#5B1233]">
+                      <h3 className="text-white text-sm font-medium">Search Recommendations</h3>
+                    </div>
+                    <div className="p-3 pt-2">
+                      <ul className="space-y-2">
+                        {recommendations.search && recommendations.search.length > 0 ? (
+                          recommendations.search.map((item, index) => (
+                            <li key={`search-${index}`} className="flex items-center text-xs text-gray-700">
+                              <div className="mr-2 flex-shrink-0">
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <circle cx="12" cy="12" r="10" stroke="#5B1233" fill="white" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16l-6-6 1.5-1.5L12 13l4.5-4.5L18 10l-6 6z" stroke="#5B1233" />
+                                </svg>
+                              </div>
+                              <span>{item.sub_task}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-xs text-gray-500 text-center py-2">
+                            {isLoading ? "Loading recommendations..." : "No search recommendations available"}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  {/* Track Recommendations */}
+                  <div className="bg-white rounded-md overflow-hidden">
+                    <div className="p-2 border-b border-gray-700 bg-[#3F4650]">
+                      <h3 className="text-white text-sm font-medium">Track Recommendations</h3>
+                    </div>
+                    <div className="p-3 pt-2">
+                      <ul className="space-y-2">
+                        {recommendations.track && recommendations.track.length > 0 ? (
+                          recommendations.track.map((item, index) => (
+                            <li key={`track-${index}`} className="flex items-center text-xs text-gray-700">
+                              <div className="mr-2 flex-shrink-0">
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <circle cx="12" cy="12" r="10" stroke="#3F4650" fill="white" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16l-6-6 1.5-1.5L12 13l4.5-4.5L18 10l-6 6z" stroke="#3F4650" />
+                                </svg>
+                              </div>
+                              <span>{item.sub_task}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-xs text-gray-500 text-center py-2">
+                            {isLoading ? "Loading recommendations..." : "No track recommendations available"}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  {/* Ask Recommendations */}
+                  <div className="bg-white rounded-md overflow-hidden">
+                    <div className="p-2 border-b border-gray-700 bg-[#001C4E]">
+                      <h3 className="text-white text-sm font-medium">Ask Recommendations</h3>
+                    </div>
+                    <div className="p-3 pt-2">
+                      <ul className="space-y-2">
+                        {recommendations.ask && recommendations.ask.length > 0 ? (
+                          recommendations.ask.map((item, index) => (
+                            <li key={`ask-${index}`} className="flex items-center text-xs text-gray-700">
+                              <div className="mr-2 flex-shrink-0">
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <circle cx="12" cy="12" r="10" stroke="#001C4E" fill="white" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16l-6-6 1.5-1.5L12 13l4.5-4.5L18 10l-6 6z" stroke="#001C4E" />
+                                </svg>
+                              </div>
+                              <span>{item.sub_task}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-xs text-gray-500 text-center py-2">
+                            {isLoading ? "Loading recommendations..." : "No ask recommendations available"}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
