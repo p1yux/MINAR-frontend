@@ -77,9 +77,9 @@ const Navbar = () => {
               <Link href="#news" className="text-gray-900 hover:text-gray-700 text-sm">
                 News
               </Link>
-              <Link href="/contact" className="text-gray-900 hover:text-gray-700 text-sm">
+              {/* <Link href="/contact" className="text-gray-900 hover:text-gray-700 text-sm">
                 Contact Us
-              </Link>
+              </Link> */}
             </div>
             )}
           </div>
@@ -146,12 +146,12 @@ const Navbar = () => {
                     <Link href={`/profile/${profile.id}`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       My Profile
                     </Link>
-                    <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    {/* <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       My Orders
                     </Link>
                     <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       Settings
-                    </Link>
+                    </Link> */}
                     <button 
                       className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                       onClick={handleLogout}
