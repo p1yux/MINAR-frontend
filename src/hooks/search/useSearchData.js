@@ -211,10 +211,11 @@ export const useSearchData = (query) => {
   }, [searchQuery, sortBy, sortOrder, safeImageUrl, sortProducts]);
 
   const updateSearchQuery = (newQuery) => {
-    // Only update if different from current query to prevent unnecessary rerenders
-    if (newQuery !== searchQuery) {
-      setSearchQuery(newQuery);
-    }
+    if (!newQuery || newQuery === searchQuery) return;
+    
+    setSearchQuery(newQuery);
+    // Also update the lastQueryRef to be consistent
+    lastQueryRef.current = newQuery;
   };
 
   return {

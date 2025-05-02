@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -13,6 +12,7 @@ export const useBrowserSession = () => {
   const [sessionId, setSessionId]   = useState(null);
   const [imageBitmap, setImageBitmap] = useState(null);
   const [error, setError]           = useState(null);
+  const [currentUrl, setCurrentUrl] = useState(null);
 
   const wsRef = useRef(null);
   const prevBitmapRef = useRef(null);
@@ -29,6 +29,7 @@ export const useBrowserSession = () => {
     }
     setIsConnected(false);
     setImageBitmap(null);
+    setCurrentUrl(null);
   }, []);
 
   // start session + ws connect
@@ -46,6 +47,7 @@ export const useBrowserSession = () => {
       if (!res.ok) throw new Error(`Status ${res.status}`);
       const { session_id } = await res.json();
       setSessionId(session_id);
+      setCurrentUrl(url);
       connectWs(session_id);
     } catch (err) {
       console.error(err);
@@ -102,6 +104,27 @@ export const useBrowserSession = () => {
     }
   };
 
+  // Get the current URL of the browser session
+  const getCurrentUrl = useCallback(async () => {
+    if (!sessionId) return null;
+    
+    try {
+      const res = await fetch(`${BROWSER_URL}/session/${sessionId}/url`, {
+        method: "GET"
+      });
+      
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      
+      const data = await res.json();
+      setCurrentUrl(data.url);
+      return data.url;
+    } catch (err) {
+      console.error("Failed to get current URL:", err);
+      toast.error("Failed to fetch current URL");
+      return null;
+    }
+  }, [sessionId]);
+
   const stopSession = useCallback(async () => {
     if (!sessionId) return;
     setIsLoading(true);
@@ -127,12 +150,14 @@ export const useBrowserSession = () => {
     isLoading,
     isConnected,
     imageBitmap,
+    currentUrl,
     error,
     startSession,
     stopSession,
     sendMouseClick,
     sendKeyboardEvent,
     sendWheel,
+    getCurrentUrl,
   };
 };
 

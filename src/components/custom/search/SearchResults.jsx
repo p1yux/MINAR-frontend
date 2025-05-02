@@ -6,6 +6,8 @@ import ProductsCard from "./ProductsCard";
 import SearchSkeleton from "./SearchSkeleton";
 import useSearchData from "@/hooks/search/useSearchData";
 import useBrowserSession from "@/hooks/browser/useBrowserSession";
+import useClassifyRepeatTask from "@/hooks/classifyrepeattask/useClassifyRepeatTask";
+import { useProfile } from "@/providers/ProfileProvider";
 
 const SearchResults = ({ initialQuery = "laptops" }) => {
   const { 
@@ -17,6 +19,9 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     updateSearchQuery,
     searchRecommendations
   } = useSearchData(initialQuery);
+  
+  const { data: profile } = useProfile();
+  const userId = profile?.id || "3456"; // Default value if not logged in
   
   // State for storing recommendations from API
   const [recommendations, setRecommendations] = useState({
@@ -31,28 +36,148 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
   });
   
   const [browserSearchQuery, setBrowserSearchQuery] = useState("");
+  const [executionResult, setExecutionResult] = useState(null);
+  const [showExecutionResult, setShowExecutionResult] = useState(false);
 
   const canvasRef = useRef(null);
   const sessionStartedRef = useRef(false);
+  const lastSearchRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   const {
     isLoading: isBrowserLoading,
     isConnected,
     imageBitmap,
+    currentUrl,
     error: browserError,
     startSession,
     stopSession,
     sendMouseClick,
     sendKeyboardEvent,
     sendWheel,
+    getCurrentUrl,
   } = useBrowserSession();
+  
+  const {
+    isLoading: isTaskLoading,
+    classificationData,
+    error: taskError,
+    classifyTask,
+    executeTask
+  } = useClassifyRepeatTask();
+
+  // Create a hook to track if user is currently typing in the search field
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
+  // Advanced focus protection using MutationObserver
+  useEffect(() => {
+    if (!activeBrowser.isOpen || !searchInputRef.current || !isSearchActive) return;
+    
+    // Keep track of focus state
+    let focusLost = false;
+    
+    // Create an interval to aggressively maintain focus
+    const focusKeeper = setInterval(() => {
+      if (isSearchActive && focusLost) {
+        searchInputRef.current?.focus();
+        focusLost = false;
+      }
+    }, 50);
+    
+    // Create event listeners for window events that might steal focus
+    const handleWindowEvents = () => {
+      if (isSearchActive) {
+        focusLost = true;
+      }
+    };
+    
+    // Watch for events that might cause focus loss
+    window.addEventListener('mousedown', handleWindowEvents);
+    window.addEventListener('mouseup', handleWindowEvents);
+    window.addEventListener('mousemove', handleWindowEvents);
+    window.addEventListener('message', handleWindowEvents);
+    
+    // Track document focus changes
+    const handleFocusChange = () => {
+      if (isSearchActive && document.activeElement !== searchInputRef.current) {
+        focusLost = true;
+      }
+    };
+    
+    document.addEventListener('focusin', handleFocusChange);
+    document.addEventListener('focusout', handleFocusChange);
+    
+    return () => {
+      clearInterval(focusKeeper);
+      window.removeEventListener('mousedown', handleWindowEvents);
+      window.removeEventListener('mouseup', handleWindowEvents);
+      window.removeEventListener('mousemove', handleWindowEvents);
+      window.removeEventListener('message', handleWindowEvents);
+      document.removeEventListener('focusin', handleFocusChange);
+      document.removeEventListener('focusout', handleFocusChange);
+    };
+  }, [activeBrowser.isOpen, isSearchActive]);
+
+  // Focus management - actively maintains focus when WebSocket is connected
+  useEffect(() => {
+    if (!activeBrowser.isOpen || !searchInputRef.current) return;
+
+    // If WebSocket is connected and user has initiated search interaction
+    if (isConnected && isSearchActive) {
+      let focusCheckCount = 0;
+      
+      // Create an interval to check and restore focus to search input
+      let focusInterval = setInterval(() => {
+        if (document.activeElement !== searchInputRef.current) {
+          searchInputRef.current.focus();
+          focusCheckCount = 0; // Reset counter when focus is restored
+        } else {
+          focusCheckCount++;
+          
+          // If focus is stable for a while, slow down the checks
+          if (focusCheckCount > 30) { // 3 seconds with stable focus
+            clearInterval(focusInterval);
+            
+            // Create a slower interval
+            const slowInterval = setInterval(() => {
+              if (document.activeElement !== searchInputRef.current) {
+                searchInputRef.current.focus();
+                clearInterval(slowInterval);
+                
+                // Restart the faster interval
+                focusInterval = setInterval(() => {
+                  if (document.activeElement !== searchInputRef.current) {
+                    searchInputRef.current.focus();
+                  }
+                }, 100);
+              }
+            }, 500); // Check every 500ms once focus is stable
+            
+            return () => {
+              clearInterval(slowInterval);
+            };
+          }
+        }
+      }, 100); // Check every 100ms initially
+
+      return () => clearInterval(focusInterval);
+    }
+  }, [isConnected, activeBrowser.isOpen, isSearchActive]);
 
   // Set initial search query only once
   useEffect(() => {
     if (initialQuery && initialQuery !== searchQuery) {
       updateSearchQuery(initialQuery);
+      lastSearchRef.current = initialQuery;
     }
   }, [initialQuery]);
+
+  // Track the latest search query
+  useEffect(() => {
+    if (searchQuery) {
+      lastSearchRef.current = searchQuery;
+    }
+  }, [searchQuery]);
 
   // Update recommendations whenever searchRecommendations changes
   useEffect(() => {
@@ -78,8 +203,20 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
       stopSession().finally(() => {
         sessionStartedRef.current = false;
       });
+      setShowExecutionResult(false);
+      setExecutionResult(null);
     }
   }, [activeBrowser.isOpen, activeBrowser.url, startSession, stopSession]);
+
+  // Focus the search input when browser becomes active
+  useEffect(() => {
+    if (activeBrowser.isOpen && searchInputRef.current) {
+      // Short delay to ensure the input is mounted and ready
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 300);
+    }
+  }, [activeBrowser.isOpen]);
 
   // Update recommendations from search data when browser opens
   useEffect(() => {
@@ -92,9 +229,10 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     }
   }, [activeBrowser.isOpen, searchRecommendations]);
 
-  // Draw each new frame
+  // Draw each new frame without stealing focus
   useEffect(() => {
     if (!imageBitmap || !canvasRef.current) return;
+    
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
@@ -104,17 +242,34 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
 
     // Draw
     ctx.drawImage(imageBitmap, 0, 0);
-    canvas.focus();
-  }, [imageBitmap]);
+    
+    // Only focus canvas if we're not in search mode
+    if (isSearchActive && searchInputRef.current) {
+      searchInputRef.current.focus();
+    } else if (!isSearchActive) {
+      canvas.focus();
+    }
+  }, [imageBitmap, isSearchActive]);
 
   // Browser event handlers
   const handleClick = (e) => {
     if (!canvasRef.current || !isConnected) return;
+    
+    // Don't process clicks that originated from the search form
+    if (e.target.closest('form')) {
+      return;
+    }
+    
+    // Always send mouse click to the browser
     const rect = canvasRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * canvasRef.current.width;
     const y = ((e.clientY - rect.top) / rect.height) * canvasRef.current.height;
     sendMouseClick(Math.round(x), Math.round(y));
-    canvasRef.current.focus();
+    
+    // Only focus the canvas if the search input isn't currently active
+    if (document.activeElement !== searchInputRef.current) {
+      canvasRef.current.focus();
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -144,13 +299,60 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
       url: "",
     });
     setBrowserSearchQuery("");
+    setShowExecutionResult(false);
+    setExecutionResult(null);
   };
   
-  const handleBrowserSearch = (e) => {
+  const submitBrowserSearch = async (e) => {
     e.preventDefault();
-    if (browserSearchQuery.trim()) {
-      // You would implement the actual search functionality here
-      console.log("Searching for:", browserSearchQuery);
+    e.stopPropagation();
+    
+    if (!browserSearchQuery.trim()) return;
+    
+    // Ensure search is marked as active during the entire operation
+    setIsSearchActive(true);
+    
+    try {
+      // Step 1: Classify the task
+      const classifiedData = await classifyTask(
+        lastSearchRef.current || searchQuery, 
+        userId, 
+        browserSearchQuery
+      );
+      
+      if (!classifiedData) {
+        searchInputRef.current?.focus();
+        return;
+      }
+      
+      // Step 2: Get the current URL
+      const url = await getCurrentUrl();
+      
+      if (!url) {
+        console.error("Failed to get current URL");
+        searchInputRef.current?.focus();
+        return;
+      }
+      
+      // Step 3: Execute the task
+      const result = await executeTask(url, userId, classifiedData);
+      
+      if (result && result.data) {
+        setExecutionResult(result.data);
+        setShowExecutionResult(true);
+        
+        // Re-focus the input after the search is complete
+        setTimeout(() => {
+          if (searchInputRef.current) {
+            searchInputRef.current.focus();
+          }
+        }, 100);
+      } else {
+        searchInputRef.current?.focus();
+      }
+    } catch (err) {
+      console.error("Browser search error:", err);
+      searchInputRef.current?.focus();
     }
   };
 
@@ -249,31 +451,6 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
             <div className="w-full lg:w-[70%] flex flex-col">
               {/* Browser window */}
               <div className="bg-white rounded-lg shadow-xl overflow-hidden h-[60vh] flex flex-col">
-                {/* <div className="flex items-center justify-between p-3 border-b">
-                  <h3 className="text-base font-semibold text-gray-900">
-                    Interactive Browser {isConnected && "(Connected)"}
-                  </h3>
-                  <button
-                    onClick={handleCloseBrowser}
-                    className="text-gray-600 p-1.5 hover:bg-gray-200 rounded-lg"
-                    aria-label="Close browser"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div> */}
-                
                 <div className="relative flex-1 p-0 overflow-hidden">
                   {isBrowserLoading && !imageBitmap && (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -302,6 +479,13 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                     onKeyDown={handleKeyDown}
                     onWheel={handleWheel}
                     tabIndex={0}
+                    style={{ outline: 'none' }}
+                    onBlur={(e) => {
+                      // Prevent blurring if we're focusing the search input
+                      if (e.relatedTarget === searchInputRef.current) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                   <button
                     onClick={handleCloseBrowser}
@@ -325,10 +509,28 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                 </div>
               </div>
               
-              {/* Search bar and recommendations below browser */}
-              <div className="mt-4 space-y-3">
+              {/* Search bar and recommendations below browser - separate from canvas to prevent focus issues */}
+              <div className="mt-4 space-y-3 relative" onClick={(e) => e.stopPropagation()}>
                 {/* Search bar with buttons */}
-                <div className="relative w-full rounded-full border border-gray-300 bg-white overflow-hidden">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    submitBrowserSearch(e);
+                  }} 
+                  className="sticky top-0 w-full rounded-full border border-gray-300 bg-white overflow-hidden z-20 shadow-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Maintain search active state when clicking anywhere in the form
+                    setIsSearchActive(true);
+                  }}
+                  onMouseDown={(e) => {
+                    // Prevent mousedown from moving focus
+                    if (document.activeElement === searchInputRef.current) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
                   <div className="flex items-center">
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                       <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center">
@@ -337,48 +539,69 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                     </div>
                     <input
                       type="text"
-                      className="block w-full pl-14 pr-3 py-2.5 bg-white text-sm focus:outline-none"
+                      className="block w-full pl-14 pr-3 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                       placeholder="Search for anything...Track any detail for this product...Ask about any detail and review of this product..."
                       value={browserSearchQuery}
-                      onChange={(e) => setBrowserSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setBrowserSearchQuery(e.target.value);
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSearchActive(true);
+                      }}
+                      onFocus={(e) => {
+                        e.stopPropagation();
+                        setIsSearchActive(true);
+                      }}
+                      onBlur={(e) => {
+                        // Only deactivate if we're not still in the form
+                        if (!e.relatedTarget || !e.relatedTarget.closest('form')) {
+                          setIsSearchActive(false);
+                        }
+                      }}
+                      disabled={isTaskLoading}
+                      autoComplete="off"
+                      ref={searchInputRef}
                     />
                     <div className="flex items-center space-x-2 pr-2">
                       <button 
-                        type="button" 
+                        type="submit" 
                         className="rounded-full px-3 py-1 border border-gray-300 text-xs"
+                        disabled={isTaskLoading || !browserSearchQuery.trim()}
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          // After clicking, refocus the input
+                          setTimeout(() => searchInputRef.current?.focus(), 0);
+                        }}
+                        onMouseDown={(e) => {
+                          // Prevent the default mousedown to avoid stealing focus
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                       >
                         <span className="flex items-center">
-                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                          </svg>
+                          {isTaskLoading ? (
+                            <div className="w-3.5 h-3.5 mr-1 rounded-full border-2 border-gray-600 border-t-transparent animate-spin"></div>
+                          ) : (
+                            <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                            </svg>
+                          )}
                           Search
-                        </span>
-                      </button>
-                      <button 
-                        type="button" 
-                        className="rounded-full px-3 py-1 border border-gray-300 text-xs"
-                      >
-                        <span className="flex items-center">
-                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-5h2v2H9v-2zm0-6h2v4H9V5z" />
-                          </svg>
-                          Track
-                        </span>
-                      </button>
-                      <button 
-                        type="button" 
-                        className="rounded-full px-3 py-1 border border-gray-300 text-xs"
-                      >
-                        <span className="flex items-center">
-                          <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                          </svg>
-                          Ask
                         </span>
                       </button>
                     </div>
                   </div>
-                </div>
+                </form>
+                
+                {/* Show execution result if available */}
+                {showExecutionResult && executionResult && (
+                  <div className="bg-white rounded-lg shadow-md p-4 mt-4">
+                    <h3 className="text-lg font-semibold mb-2">Reviews</h3>
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded border">{executionResult}</pre>
+                  </div>
+                )}
                 
                 {/* Three recommendation sections */}
                 <div className="grid grid-cols-3 gap-3">
