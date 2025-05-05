@@ -34,7 +34,7 @@ export const useLogoutUser = () => {
       toast.success("Logged out successfully");
       
       // Redirect to login page
-      window.location.href="/login"
+      router.push("/login");
     },
     onError: (error) => {
       toast.error(error.message || "Failed to log out");

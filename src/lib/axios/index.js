@@ -3,8 +3,8 @@ import Cookies from "js-cookie";
 
 const environment = process.env.NEXT_PUBLIC_ENV || "development";
 const baseURL = environment === "production" 
-  ? process.env.NEXT_PUBLIC_DEV_URL
-  : process.env.NEXT_PUBLIC_PROD_URL;
+  ? process.env.NEXT_PUBLIC_FRONTEND_URL
+  : process.env.NEXT_PUBLIC_FRONTEND_URL;
 
 const axiosInstance = axios.create({
   baseURL,

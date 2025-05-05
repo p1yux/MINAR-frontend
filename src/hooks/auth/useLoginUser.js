@@ -109,7 +109,7 @@ export const useLoginUser = () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       
       // Redirect to home page
-      window.location.href="/"
+      router.push("/");
     },
     onError: (error) => {
       if (error.message === "email_not_verified") {

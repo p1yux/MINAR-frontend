@@ -226,7 +226,9 @@ export const useSearchData = (query) => {
     error,
     searchQuery,
     updateSearchQuery,
-    searchRecommendations
+    searchRecommendations,
+    safeImageUrl,
+    sortProducts
   };
 };
 

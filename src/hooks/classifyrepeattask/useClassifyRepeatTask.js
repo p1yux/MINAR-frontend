@@ -17,7 +17,7 @@ export const useClassifyRepeatTask = () => {
     setError(null);
     
     try {
-      const response = await axios.post(`${ASSISTANT_URL}/classify-repeat-task/`, {
+      const response = await axios.post(`${ASSISTANT_URL}/classify-repeat-task`, {
         last_search: lastSearch,
         user_id: String(userId),
         task: {
@@ -47,7 +47,7 @@ export const useClassifyRepeatTask = () => {
     setError(null);
     
     try {
-      const response = await axios.post(`${ASSISTANT_URL}/execute-repeat-task/`, {
+      const response = await axios.post(`${ASSISTANT_URL}/execute-repeat-task`, {
         current_url: currentUrl,
         user_id: String(userId),
         task: taskData

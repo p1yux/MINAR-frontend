@@ -17,7 +17,9 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
     error,
     searchQuery,
     updateSearchQuery,
-    searchRecommendations
+    searchRecommendations,
+    safeImageUrl,
+    sortProducts
   } = useSearchData(initialQuery);
   
   const { data: profile } = useProfile();
@@ -324,6 +326,13 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
         searchInputRef.current?.focus();
         return;
       }
+
+      // Check if this is a search workflow
+      const isSearchWorkflow = classifiedData.sub_task_workflow === "search";
+      console.log("Task classification:", { 
+        workflow: classifiedData.sub_task_workflow,
+        isSearchWorkflow 
+      });
       
       // Step 2: Get the current URL
       const url = await getCurrentUrl();
@@ -337,16 +346,90 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
       // Step 3: Execute the task
       const result = await executeTask(url, userId, classifiedData);
       
-      if (result && result.data) {
-        setExecutionResult(result.data);
-        setShowExecutionResult(true);
+      if (result) {
+        // Safely access result data
+        const responseData = result.data || result;
         
-        // Re-focus the input after the search is complete
-        setTimeout(() => {
-          if (searchInputRef.current) {
-            searchInputRef.current.focus();
+        // Check if it's a search workflow AND the response is in search results format
+        if (isSearchWorkflow && responseData && typeof responseData === 'object' && 
+            responseData.output && Array.isArray(responseData.output.data) && 
+            responseData.output.data.length > 0) {
+          // This is a search results response (similar to /api/search)
+          console.log("Received search results response for search workflow:", responseData);
+          
+          // Close the browser
+          handleCloseBrowser();
+          
+          // Update the search results with the new data
+          // First update the search query
+          if (browserSearchQuery) {
+            updateSearchQuery(browserSearchQuery);
           }
-        }, 100);
+          
+          // Process the search results data
+          const searchData = responseData.output.data[0];
+          
+          // Extract listings (site catalogs)
+          if (searchData && searchData.listings) {
+            setSiteCatalogs(searchData.listings.map((listing, index) => ({
+              id: index + 1,
+              title: listing.title || "Untitled Listing",
+              sourceName: listing.hostname || "Unknown Source",
+              startingPrice: listing.price ? listing.price.replace("Prices on matching products from ", "").replace("₹", "").trim() : null,
+              imageUrl: listing.image_url ? safeImageUrl(listing.image_url) : "/images/search/placeholder.jpg",
+              productUrl: listing.url || ""
+            })));
+          }
+          
+          // Extract products
+          if (searchData && searchData.products) {
+            const mappedProducts = searchData.products.map((product, index) => ({
+              id: index + 1,
+              title: product.title || "Untitled Product",
+              price: product.price ? product.price.replace("₹", "").trim() : "",
+              specs: null,
+              discount: product.other_details?.Discount || null,
+              bank: product.other_details?.Rating || null,
+              deliveryDate: product.other_details?.Availability || "Check website",
+              imageUrl: product.image_url ? safeImageUrl(product.image_url) : "/images/search/placeholder.jpg",
+              productUrl: product.url || "",
+              position: product.position || index + 1
+            }));
+            
+            // Update products
+            setProducts(sortProducts(mappedProducts));
+          }
+          
+          // Extract recommendations
+          if (responseData.output.data.length > 1) {
+            const recommendationData = responseData.output.data[1];
+            
+            // Set search recommendations
+            setSearchRecommendations({
+              search: recommendationData.search || [],
+              track: recommendationData.track || [],
+              ask: recommendationData.ask || []
+            });
+          }
+        } else {
+          // This is an information-based response or a non-search workflow
+          // Ensure we're handling the data properly
+          const textData = typeof responseData === 'string' 
+            ? responseData
+            : typeof responseData === 'object'
+              ? responseData.data || JSON.stringify(responseData, null, 2)
+              : String(responseData);
+              
+          setExecutionResult(textData);
+          setShowExecutionResult(true);
+          
+          // Re-focus the input after the search is complete
+          setTimeout(() => {
+            if (searchInputRef.current) {
+              searchInputRef.current.focus();
+            }
+          }, 100);
+        }
       } else {
         searchInputRef.current?.focus();
       }
@@ -487,7 +570,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                       }
                     }}
                   />
-                  <button
+                  {/* <button
                     onClick={handleCloseBrowser}
                     className="absolute top-2 right-2 z-10 bg-white text-gray-600 p-1.5 hover:bg-gray-200 rounded-lg shadow-md"
                     aria-label="Close browser"
@@ -505,7 +588,7 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
-                  </button>
+                  </button> */}
                 </div>
               </div>
               
@@ -599,7 +682,13 @@ const SearchResults = ({ initialQuery = "laptops" }) => {
                 {showExecutionResult && executionResult && (
                   <div className="bg-white rounded-lg shadow-md p-4 mt-4">
                     <h3 className="text-lg font-semibold mb-2">Reviews</h3>
-                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded border">{executionResult}</pre>
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded border">
+                      {typeof executionResult === 'string' 
+                        ? executionResult 
+                        : typeof executionResult === 'object'
+                          ? JSON.stringify(executionResult, null, 2)
+                          : String(executionResult)}
+                    </pre>
                   </div>
                 )}
                 

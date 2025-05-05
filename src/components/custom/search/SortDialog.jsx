@@ -14,9 +14,9 @@ const SortDialog = ({ isOpen, onClose }) => {
   
   const sortOptions = [
     { value: "price", label: "Price" },
-    { value: "rating", label: "Rating" },
-    { value: "availability", label: "Availability" },
-    { value: "position", label: "Relevance (Default)" }
+    // { value: "rating", label: "Rating" },
+    // { value: "availability", label: "Availability" },
+    // { value: "position", label: "Relevance (Default)" }
   ];
   
   const handleApplySort = () => {
