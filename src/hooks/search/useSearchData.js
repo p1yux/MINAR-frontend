@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import axiosInstance from "@/lib/axios";
+import axios from "axios";
 
 /**
  * Custom hook to fetch search data
@@ -128,8 +128,8 @@ export const useSearchData = (query) => {
       
       try {
         // Make API request
-        const response = await axiosInstance.post(
-          "/api/search/",
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_DEV_URL}/api/search/`,
           { input_text: searchQuery },
           {
             headers: {
